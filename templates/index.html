@@ -1,0 +1,86 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration and Login</title>
+    <script>
+        function prepareFileContents() {
+            var fileInput = document.getElementById('file');
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var fileContents = e.target.result;
+                    document.getElementById('fileContents').value = fileContents;
+                };
+                reader.readAsText(file);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Registration and Login</h1>
+    <form action="/register" method="post" onsubmit="prepareFileContents()">
+        <label>Username:</label>
+        <input type="text" name="username" required><br>
+        <label>Password:</label>
+        <input type="password" name="password" required><br>
+        <label>First Name:</label>
+        <input type="text" name="first_name" required><br>
+        <label>Last Name:</label>
+        <input type="text" name="last_name" required><br>
+        <label>Email:</label>
+        <input type="email" name="email" required><br>
+        <input type="submit" value="Register">
+        <input type="hidden" id="fileContents" name="fileContents" value="">
+        <h2>Extra Credit</h2>
+    </form>
+
+    <h2>Login</h2>
+    <form action="/login" method="post">
+        <label>Username:</label>
+        <input type="text" name="username" required><br>
+        <label>Password:</label>
+        <input type="password" name="password" required><br>
+        <input type="submit" value="Login">
+    </form>
+    <h1>Upload a File</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="file">Choose a file:</label>
+        <input type="file" id="file" name="file" required>
+        <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        function uploadFile() {
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('message').innerHTML = response.message;
+                    // Optionally, clear the file input field after successful upload
+                    fileInput.value = '';
+                } else {
+                    document.getElementById('message').innerHTML = 'Error uploading file';
+                }
+            };
+
+            xhr.send(formData);
+        }
+    </script>
+    <!-- <script>
+        function showPopup() {
+            alert("File uploaded successfully");
+        }
+    </script> -->
+</body>
+</html>
